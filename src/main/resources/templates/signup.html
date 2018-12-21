@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<title>Sign up</title>
+<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+<link rel="stylesheet" type="text/css" href="css/demo.css" />
+<!--必要样式-->
+<link rel="stylesheet" type="text/css" href="css/component.css" />
+<!--[if IE]>
+<script src="js/html5.js"></script>
+<![endif]-->
+</head>
+<body>
+		<div class="container demo-1">
+			<div class="content">
+				<div id="large-header" class="large-header">
+					<canvas id="demo-canvas"></canvas>
+					<div class="logo_box">
+						<h3>欢迎你</h3>
+						<form action="/addsignup" name="signupform" method="post">
+							<div id = "error_tips" class="text" style="text-align:center;display:block;"></div>
+							<div class="input_outer">
+								<input name="username" class="text" style="color: #FFFFFF !important" type="text" placeholder="请输入账户">
+							</div>
+							<div class="input_outer">
+								<input name="password" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;"value="" type="password" placeholder="请输入密码">
+							</div>
+							<div class="input_outer">
+								<input name="name" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;"value="" type="text" placeholder="请输入姓名">
+							</div>
+							<a id="submit" class="act-but submit" href="javascript:;" style="color: #FFFFFF">注册</a>
+							<h3>返回主页？<a href="/index"> 请点击这里</a></h3>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div><!-- /container -->
+		<script src="js/jquery-2.1.1.min.js"></script>
+		<script src="js/TweenLite.min.js"></script>
+		<script src="js/EasePack.min.js"></script>
+		<script src="js/rAF.js"></script>
+		<script src="js/demo-1.js"></script>
+
+		<script type="application/javascript">
+            //发送表单ajax请求
+            $("#submit").on('click',function(){
+                $.ajax({
+                    url:"/signup",
+                    type:"post",
+                    data:JSON.stringify($('form').serializeObject()),
+                    dataType: "text",
+                    contentType:"application/json",  //缺失会出现URL编码，无法转成json对象
+                    success:function(data) {
+                        switch (data) {
+                            case "username null":
+                                document.getElementById("error_tips").innerHTML="用户名不得为空！";
+                                break;
+                            case "password short":
+                                document.getElementById("error_tips").innerHTML="密码不得短于6位！";
+                                break;
+							case "user existed":
+                                document.getElementById("error_tips").innerHTML="用户名已存在！";
+                                break;
+                            case "success":
+                                window.location.href = "/admin";
+                                alert("注册成功！");
+                                break;
+                            default:
+                                document.getElementById("error_tips").innerHTML="注册失败！";
+                                break;
+                        }
+                        setTimeout(function(){document.getElementById("error_tips").innerHTML="";},5000);
+                    }
+                });
+            });
+
+            /**
+             * 自动将form表单封装成json对象
+             */
+            $.fn.serializeObject = function() {
+                var o = {};
+                var a = this.serializeArray();
+                $.each(a, function() {
+                    if (o[this.name]) {
+                        if (!o[this.name].push) {
+                            o[this.name] = [ o[this.name] ];
+                        }
+                        o[this.name].push(this.value || '');
+                    } else {
+                        o[this.name] = this.value || '';
+                    }
+                });
+                return o;
+            };
+		</script>
+
+		<div style="text-align:center;">
+</div>
+	</body>
+</html>

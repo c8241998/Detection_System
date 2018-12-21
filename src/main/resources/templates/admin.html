@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>基于实时视频分析的入侵检测系统</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <link rel="stylesheet" href="admin/css/bootstrap.min.css">
+    <link rel="stylesheet" href="admin/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="admin/css/fontAwesome.css">
+    <link rel="stylesheet" href="admin/css/light-box.css">
+    <link rel="stylesheet" href="admin/css/templatemo-main.css">
+    <!--<link rel="stylesheet" href="admin/css/element.min.css">&lt;!&ndash;分页&ndash;&gt;-->
+    <link rel="stylesheet" href="src/jquery.page.css"><!--分页-->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+
+    <script src="admin/js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+</head>
+
+<body>
+<div class="sequence">
+
+    <div class="seq-preloader">
+        <svg width="39" height="16" viewBox="0 0 39 16" xmlns="http://www.w3.org/2000/svg"
+             class="seq-preload-indicator">
+            <g fill="#F96D38">
+                <path class="seq-preload-circle seq-preload-circle-1"
+                      d="M3.999 12.012c2.209 0 3.999-1.791 3.999-3.999s-1.79-3.999-3.999-3.999-3.999 1.791-3.999 3.999 1.79 3.999 3.999 3.999z"/>
+                <path class="seq-preload-circle seq-preload-circle-2"
+                      d="M15.996 13.468c3.018 0 5.465-2.447 5.465-5.466 0-3.018-2.447-5.465-5.465-5.465-3.019 0-5.466 2.447-5.466 5.465 0 3.019 2.447 5.466 5.466 5.466z"/>
+                <path class="seq-preload-circle seq-preload-circle-3"
+                      d="M31.322 15.334c4.049 0 7.332-3.282 7.332-7.332 0-4.049-3.282-7.332-7.332-7.332s-7.332 3.283-7.332 7.332c0 4.05 3.283 7.332 7.332 7.332z"/>
+            </g>
+        </svg>
+    </div>
+
+</div>
+
+
+<nav>
+    <div class="logo">
+        <img src="admin/img/logo.png" alt="">
+    </div>
+    <div class="mini-logo">
+        <img src="admin/img/mini_logo.png" alt="">
+    </div>
+    <ul>
+        <li><a href="#1"><i class="fa fa-home"></i> <em>我的摄像头</em></a></li>
+        <li><a href="#2"><i class="fa fa-pencil"></i> <em>添加摄像头</em></a></li>
+        <li><a href="#3"><i class="fa fa-image"></i> <em>查看入侵历史</em></a></li>
+        <li><a href="#4"><i class="fa fa-user"></i> <em>我的信息</em></a></li>
+    </ul>
+</nav>
+
+<div class="slides">
+    <div class="slide" id="1">
+        <div class="content second-content">
+            <div class="container-fluid">
+                <div class="col-md-6">
+                    <div class="left-content">
+                        <h2>我的摄像头</h2>
+                        <style>
+                            * {
+                                margin: 0;
+                                padding: 0;
+                            }
+
+                            table {
+                                /*设置相邻单元格的边框间的距离*/
+                                border-spacing: 0;
+                                /*表格设置合并边框模型*/
+                                border-collapse: collapse;
+                                text-align: center;
+                            }
+
+                            /*关键设置 tbody出现滚动条*/
+                            table tbody {
+                                display: block;
+                                height: 300px;
+                                overflow-y: scroll;
+                            }
+
+                            table thead,
+                            tbody tr {
+                                display: table;
+                                width: 100%;
+                                table-layout: fixed;
+                            }
+
+                            /*关键设置：滚动条默认宽度是16px 将thead的宽度减16px*/
+                            table thead {
+                                width: calc(100% - 1em)
+                            }
+
+                            table thead th {
+                                background: #ccc;
+                            }
+
+                        </style>
+                        <table border="1" width="400" style="font-family:'宋体';font-size:20px;"
+                               bordercolor="grey">
+                            <tbody id="cameras"></tbody>
+                        </table>
+                        <script type="text/javascript">
+                            document.querySelectorAll('a').forEach(function (el) {
+                                el.addEventListener('click', function () {
+                                    var dHeight = document.documentElement.clientHeight;
+                                    var target = document.querySelector('div[id="1"]')
+//                                    target.style.height = dHeight - 30 + "px";
+                                    target.scrollIntoView(false);
+                                })
+                            })
+                        </script>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="left-content">
+
+                        <h2>摄像头授权</h2>
+                        <table width="400" border="4" style="font-family:'宋体';font-size:20px;" bordercolor="white">
+                            <tr>
+                                <td style="color:white;">摄像头编号</td>
+                                <td style="color:white;">摄像头信息</td>
+                            </tr>
+                            <tr>
+                                <td style="color:white;"><a href="#3">001</a></td>
+                                <td style="color:white;"></td>
+                            </tr>
+                            <tr>
+                                <td style="color:white;"><a href="#3">002</a></td>
+                                <td style="color:white;"></td>
+                            </tr>
+                            <tr>
+                                <td style="color:white;"><a href="#3">003</a></td>
+                                <td style="color:white;"></td>
+                            </tr>
+                            <tr>
+                                <td style="color:white;"><a href="#3">004</a></td>
+                                <td style="color:white;"></td>
+                            </tr>
+                        </table>
+                        <script type="text/javascript">
+                            document.querySelectorAll('a').forEach(function (el) {
+                                el.addEventListener('click', function () {
+                                    var dHeight = document.documentElement.clientHeight;
+                                    var target = document.querySelector('div[id="1"]')
+//                                    target.style.height = dHeight - 30 + "px";
+                                    target.scrollIntoView(false);
+                                })
+                            })
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slide" id="2">
+        <div class="content second-content">
+            <div class="container-fluid">
+                <div class="col-md-6">
+                    <div class="left-content">
+                        <h2>添加摄像头</h2>
+                        <h4>摄像头编号</h4>
+                        <input name="name" type="text" class="form-control" id="addCameraId" placeholder="编号"
+                               required="">
+                        <h4>摄像头密码</h4>
+                        <input name="name" type="text" class="form-control" id="addCameraPassword" placeholder="密码"
+                               required="">
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <div class="main-btn"><a onclick="bindWithCamera()">确认添加摄像头</a></div>
+
+                    </div>
+                </div>
+                <!-- <div class="col-md-6">
+                    <div class="right-image">
+                      <img src="img/about_image.jpg" alt="">
+                  </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <div class="slide" id="3">
+        <div class="content fourth-content">
+            <div class="container-fluid">
+                <div class="col-md-9">
+                    <h2>入侵历史</h2>
+                </div>
+                <div class="col-md-3">
+                    <div class="btn-group">
+                        <br>
+                        <button id="cameraMenuName" type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">选择摄像头<span class="caret"></span></button>
+                        <ul id="cameraMenu" class="dropdown-menu">
+                            <li role="presentation" class="dropdown-header">请选择摄像头</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div id="pictures" class="row"></div>
+                <br>
+                <div id="page"></div>
+                <!--<div id="myVue">-->
+                <!--<el-pagination-->
+                <!--background-->
+                <!--layout="prev, pager, next"-->
+                <!--:total="50">-->
+                <!--</el-pagination>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+    <div class="slide" id="4">
+        <div class="content fifth-content">
+            <div class="container-fluid">
+                <div class="col-md-6">
+                    <!--<div id="map">-->
+                    <form id="contact" action="" method="post">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="left-content">
+                                    <h2>我的信息</h2>
+                                    </br></br></br>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <h4>账号</h4>
+                                    <input name="username" type="text" class="form-control disabled" id="username"
+                                           style="background-color:transparent; font-size:22px;"
+                                           placeholder="无" readonly>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <h4>姓名</h4>
+                                    <input name="name" type="text" class="form-control disabled" id="name"
+                                           style="background-color:transparent; font-size:22px;"
+                                           placeholder="无" readonly>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-12">
+                                <fieldset>
+
+                                    <h4>电话号码</h4>
+                                    <input name="phone" type="text" class="form-control disabled" id="phone"
+                                           style="background-color:transparent; font-size:22px;"
+                                           placeholder="无" readonly>
+                                </fieldset>
+                            </div>
+
+                        </div>
+                    </form>
+                    <!-- <iframe src="" width="100%" height="500px" frameborder="0" style="border:0" allowfullscreen></iframe> -->
+                    <!--</div>-->
+                </div>
+                <div class="col-md-5">
+                    <!--<form id="change">-->
+                    <div class="row">
+                        </br></br></br>
+                        <h2>修改信息</h2>
+                        </br></br></br>
+                        <div class="col-md-12">
+                            <fieldset>
+                                <input name="name" type="text submit" class="form-control" id="update_name"
+                                       placeholder="修改姓名...">
+                            </fieldset>
+                        </div>
+                        <div class="col-md-12">
+                            <fieldset>
+                                <input name="phone" type="text submit" class="form-control" id="update_phone"
+                                       placeholder="修改电话号码...">
+                            </fieldset>
+                        </div>
+                        <div class="col-md-12">
+                            <fieldset>
+                                <input name="password" type="text submit" class="form-control" id="update_password"
+                                       placeholder="修改密码...">
+                            </fieldset>
+                        </div>
+                        <div class="col-md-12">
+                            <fieldset>
+                                <textarea name="message" rows="6" class="form-control" id="suggestion"
+                                          placeholder="您的建议..." type="submit"></textarea>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-12">
+                            <fieldset>
+                                <button type="submit" id="update_user" class="btn">一键修改</button>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <!--</form>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="content">
+        <p>基于实时视频分析的入侵检测系统</p>
+    </div>
+</div>
+
+<!--<script src="admin/js/element.min.js"></script>-->
+<!--<script type="text/javascript" src="admin/js/vue.min.js"></script>-->
+<!--<script type="text/javascript">-->
+<!--new Vue({-->
+<!--el: '#myVue',-->
+<!--data() {-->
+<!--return {-->
+<!--currentPage1: 5,-->
+<!--currentPage2: 5,-->
+<!--currentPage3: 5,-->
+<!--currentPage4: 4-->
+<!--}-->
+<!--},-->
+<!--methods: {-->
+<!--handleSizeChange(val) {-->
+<!--console.log(`每页 ${val} 条`);-->
+<!--},-->
+<!--handleCurrentChange(val) {-->
+<!--console.log(`当前页: ${val}`);-->
+<!--}-->
+<!--}-->
+<!--})-->
+<!--</script>-->
+
+<script src="admin/js/vendor/jquery-1.11.2.min.js"></script>
+<script src="admin/js/vendor/bootstrap.min.js"></script>
+<script src="admin/js/datepicker.js"></script>
+<script src="admin/js/plugins.js"></script>
+<script src="admin/js/main.js"></script>
+<script src="src/jquery.min.js"></script>
+<script type="text/javascript" src="src/jquery.page.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // navigation click actions
+        $('.scroll-link').on('click', function (event) {
+            event.preventDefault();
+            var sectionID = $(this).attr("data-id");
+            scrollToID('#' + sectionID, 750);
+        });
+        // scroll to top action
+        $('.scroll-top').on('click', function (event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 'slow');
+        });
+        // mobile nav toggle
+        $('#nav-toggle').on('click', function (event) {
+            event.preventDefault();
+            $('#main-nav').toggleClass("open");
+        });
+    });
+
+    // scroll function
+    function scrollToID(id, speed) {
+        var offSet = 0;
+        var targetOffset = $(id).offset().top - offSet;
+        var mainNav = $('#main-nav');
+        $('html,body').animate({scrollTop: targetOffset}, speed);
+        if (mainNav.hasClass("open")) {
+            mainNav.css("height", "1px").removeClass("in").addClass("collapse");
+            mainNav.removeClass("open");
+        }
+    }
+
+    if (typeof console === "undefined") {
+        console = {
+            log: function () {
+            }
+        };
+    }
+</script>
+
+<script type="text/javascript">
+    function addCameras(id, state) {
+        var tr, td, a, li;
+
+        // 添加至表格
+        tr = document.createElement("tr");
+
+        td = document.createElement("td");
+        td.setAttribute("style", "color:white;");
+        a = document.createElement("a");
+        a.setAttribute("href", "#3");
+        a.setAttribute("onclick", "selectCamera(\"" + id + "\")");
+        a.setAttribute("style", "color:white;");
+        a.innerHTML = id;
+        td.appendChild(a);
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.setAttribute("style", "color:white;");
+        td.innerHTML = state;
+        tr.appendChild(td);
+        document.getElementById("cameras").appendChild(tr);
+        //
+
+        // 添加至下拉框
+        li = document.createElement("li");
+        li.setAttribute("role", "presentation");
+        a = document.createElement("a");
+        a.setAttribute("onclick", "selectCamera(\"" + id + "\")");
+        a.innerHTML = id;
+        li.appendChild(a);
+        document.getElementById("cameraMenu").appendChild(li);
+    }
+
+    function getCameras() {
+        $.ajax({
+            url: "/admin/cameras",
+            type: "get",
+            dataType: "text",
+            success: function (data) {
+                document.getElementById("cameras").innerHTML = "";
+                document.getElementById("cameraMenu").innerHTML = "";
+                // 添加表格头
+                var tr, td, li;
+                tr = document.createElement("tr");
+                td = document.createElement("td");
+                td.setAttribute("style", "color:white;");
+                td.innerHTML = "编号";
+                tr.appendChild(td);
+                td = document.createElement("td");
+                td.setAttribute("style", "color:white;");
+                td.innerHTML = "状态";
+                tr.appendChild(td);
+                document.getElementById("cameras").appendChild(tr);
+
+                // 添加下拉框头
+                li = document.createElement("li");
+                li.setAttribute("role", "presentation");
+                li.setAttribute("class", "dropdown-header");
+                li.innerHTML = "请选择摄像头";
+                document.getElementById("cameraMenu").appendChild(li);
+
+                var cameras = data.toString().split("\n");
+                for (var i = 0; i < cameras.length - 1; i += 2) {
+                    addCameras(cameras[i], (cameras[i + 1] === "on") ? "开启" : "关闭");
+                }
+            }
+        });
+    }
+
+    function bindWithCamera() {
+        var json = "{\"cameraId\":\"" + document.getElementById("addCameraId").value + "\"," +
+            "\"password\":\"" + document.getElementById("addCameraPassword").value + "\"}";
+        $.ajax({
+            url: "/admin/user/bind",
+            type: "post",
+            data: json,
+            dataType: "text",
+            contentType: "application/json",
+            success: function (data) {
+                var text;
+                switch (data) {
+                    case "id null":
+                        text = "编号不得为空！";
+                        break;
+                    case "password null":
+                        text = "密码不得为空！";
+                        break;
+                    case "camera not exist":
+                        text = "摄像头编号不存在！";
+                        break;
+                    case "fail":
+                        text = "密码错误！";
+                        break;
+                    case "bind exist":
+                        text = "摄像头已被绑定！";
+                        break;
+                    case "success":
+                        text = "绑定成功！";
+                        break;
+                    default:
+                        text = "绑定失败！";
+                        break;
+                }
+                alert(text);
+                getUser();
+            }
+        });
+
+    }
+</script>
+
+<script type="text/javascript">
+    // websocket声明
+    var site_addr = "ws://localhost:8088";
+
+    var msgSock = null;
+    var picSock = null;
+
+    function startMsgSock() {
+        if ('WebSocket' in window) {
+            msgSock = new WebSocket(site_addr + "/admin/message");
+        }
+        else
+            alert("浏览器不支持websocket");
+
+        msgSock.onerror = function () {
+            alert("WebSocket连接发生错误");
+        };
+
+        msgSock.onopen = function () {
+            msgSock.send(username);
+        };
+
+        msgSock.onmessage = function (event) {
+            var message = event.data.toString().split("\n");
+            var text;
+            switch (message[0]) {
+                case "invade":
+                    text = "检测到入侵，摄像头编号：" +
+                        message[1] + "\n请刷新页面查看";
+                    break;
+                case "state":
+                    text = "摄像头编号：" + message[1];
+                    if (message[2] === "on")
+                        text += "已开启";
+                    else
+                        text += "已关闭";
+                    break;
+                default:
+                    return;
+            }
+            if(message[0]=="invade"){
+                if(currentPage==1){
+                    document.getElementById("pictures").innerHTML="";
+                    getImg(1);
+                }
+                else
+                    alert(text);
+            }
+
+        };
+    }
+
+    function startPicSock() {
+        if ('WebSocket' in window)
+            picSock = new WebSocket(site_addr + "/admin/picture");
+        else
+            alert('当前浏览器 Not support websocket');
+
+        picSock.onerror = function () {
+            alert("图片加载失败，请刷新重试");
+        };
+
+        picSock.onopen = function () {
+        };
+
+        picSock.onmessage = function (event) {
+
+
+
+            var reader = new FileReader();
+            //设置FileReader对象的读取文件回调方法
+            reader.onload = function (eve) {
+                //判断文件是否读取完成
+                if (eve.target.readyState === FileReader.DONE) {
+
+                    var div = showImg(this.result, "human", "2018-7-18 18:22:34")
+//                    alert(this.result);
+//                    $.ajax({
+//                        url: "/login",
+//                        type: "post",
+//                        data: ,
+//                        dataType: "text",
+//                        contentType: "application/json",  //缺失会出现URL编码，无法转成json对象
+//                        success: function (data) {
+//                        }
+//                    });
+                    document.getElementById("pictures").appendChild(div);
+                }
+            };
+            //调用FileReader的readAsDataURL的方法自动就会触发onload事件
+            var x = reader.readAsDataURL(event.data);
+        };
+    }
+
+    window.onbeforeunload = function () {
+        closeWebSocket();
+    };
+
+    function closeWebSocket() {
+        msgSock.close();
+        picSock.close();
+    }
+</script>
+
+<script type="text/javascript">
+    var cameraId;
+    var recordNum = 0;
+    var currentPage=0;
+
+    function setSelector(num) {
+        recordNum = num;
+        $("#page").Page({
+            totalPages: Math.ceil(num/ 6),
+            liNums: 7,
+            firstPage: '«',//首页按钮名称
+            lastPage: '»',//末页按钮名称
+            prv: '‹',//前一页按钮名称
+            next: '›',//后一页按钮名称
+            activeClass: 'activeP',
+            callBack: function (page) {
+                document.getElementById("pictures").innerHTML = "";
+                getImg(page);
+                currentPage=page;
+            }
+        });
+    }
+
+    function selectCamera(id) {
+        cameraId = id;
+        currentPage=1;
+        var json = "{\"cameraId\":\"" + id + "\"}";
+        $.ajax({
+            url: "/admin/camera/recordsNum",
+            type: "post",
+            data: json,
+            contentType: "application/json",
+            dataType: "text",
+            success: function (data) {
+                //改分页的页数
+                setSelector(parseInt(data.toString()));
+                document.getElementById("cameraMenuName").innerHTML = id;
+                document.getElementById("pictures").innerHTML = "";
+                getImg(1);
+
+            }
+        });
+    }
+
+    function getImg(page) {
+        var map = new Map();
+        var start = page * 6;
+        var end = recordNum < start ? recordNum : start;
+        start -= 6;
+        for (var i = start; i < end; i++) {
+            picSock.send(cameraId + "\n" + i);
+        }
+    }
+
+    function showImg(file, type, time) {
+        var div1 = document.createElement("div");
+        var div2 = document.createElement("div");
+        var div3 = document.createElement("div");
+        var div4 = document.createElement("div");
+        var div5 = document.createElement("div");
+        var div6 = document.createElement("div");
+        var img = document.createElement("img");
+        var a = document.createElement("a");
+        div1.setAttribute("class", "col-md-4 col-sm-6");
+        div2.setAttribute("class", "item");
+        div3.setAttribute("class", "thumb");
+        div4.setAttribute("class", "image");
+        div4.setAttribute("style","height: 90%;width: 90%;");
+        div5.setAttribute("class", "hover-effect");
+        div6.setAttribute("class", "hover-content");
+        a.setAttribute("href", file);
+        a.setAttribute("data-lightbox", "image1");
+        img.src = file;
+        div6.innerHTML = "<h2>类型：</h2>\n" +
+            "<p>" + type + "</p></br></br>" +
+            "<h2>时间：</h2>\n" +
+            "<p>" + time + "</p>";
+        div1.appendChild(div2);
+        div2.appendChild(div3);
+        div3.appendChild(a);
+        div3.appendChild(div4);
+        a.appendChild(div5);
+        div4.appendChild(img);
+        div5.appendChild(div6);
+        return div1;
+    }
+
+</script>
+
+<script type="text/javascript">
+    var userId;
+    var username;
+    var name;
+    var phone;
+
+    function getUser() {
+        $.ajax({
+            url: "/admin/user",
+            type: "get",
+            dataType: "text",
+            success: function (data) {
+                var strs = data.toString().split("\n");
+                username = strs[0];
+                name = strs[1];
+                phone = strs[2];
+                userId = strs[3];
+                if (name === "null")
+                    name = "无";
+                if (phone === "null")
+                    phone = "无";
+                document.getElementById("username").value = username;
+                document.getElementById("name").value = name;
+                document.getElementById("phone").value = phone;
+                getCameras();
+                startMsgSock();
+                startPicSock();
+            }
+        });
+    }
+
+    $("#update_user").on("click", function () {
+        var json = "{\"name\":\"" + document.getElementById("update_name").value + "\"," +
+            "\"phone\":\"" + document.getElementById("update_phone").value + "\"," +
+            "\"password\":\"" + document.getElementById("update_password").value + "\"}";
+        $.ajax({
+            url: "/admin/user/update",
+            type: "post",
+            data: json,
+            dataType: "text",
+            contentType: "application/json",
+            success: function (data) {
+                var text;
+                switch (data) {
+                    case "phone error":
+                        text = "电话号码填写错误！";
+                        break;
+                    case "password short":
+                        text = "密码不得短于6位！";
+                        break;
+                    case "success":
+                        text = "修改成功！";
+                        break;
+                    default:
+                        text = "修改失败！";
+                        break;
+                }
+                alert(text);
+                getUser();
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    setSelector(0);
+    getUser();
+</script>
+
+</body>
+</html>
